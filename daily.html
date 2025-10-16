@@ -1,0 +1,27 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5>Daily Challenge — {{ challenge.date }}</h5>
+          <p class="small text-muted">Guess the number (1-10) to win {{ challenge.reward_amount }} TSH</p>
+          {% if message %}
+            <div class="alert alert-info">{{ message }}</div>
+          {% endif %}
+          {% if claimed %}
+            <div class="alert alert-secondary">You already attempted today's challenge. Won: {{ claimed.won }}</div>
+          {% else %}
+            <form method="post">
+              {% csrf_token %}
+              {{ form.guess.label_tag }}
+              {{ form.guess }}
+              <button class="btn btn-primary mt-2">Submit</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
