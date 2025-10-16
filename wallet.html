@@ -1,0 +1,114 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-6">
+      <!-- Wallet Balance -->
+      <div class="card border-success mb-3">
+        <div class="card-body text-center">
+          <h4 class="text-success">💰 Your Balance</h4>
+          <div class="display-4 text-success">{{ wallet.balance }} TSH</div>
+        </div>
+      </div>
+      
+      <!-- Deposit Form -->
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">💳 Deposit Funds</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="deposit">
+            <div class="mb-3">
+              <label class="form-label">Amount (TSH)</label>
+              {{ deposit_form.amount }}
+              {% if deposit_form.amount.errors %}
+                <div class="alert alert-danger mt-2">
+                  {% for error in deposit_form.amount.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            <button class="btn btn-success w-100" type="submit">💰 Deposit</button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Withdraw Form -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">📱 Mobile Money Withdrawal</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="withdraw">
+            <div class="mb-3">
+              <label class="form-label">Provider</label>
+              {{ withdraw_form.provider }}
+              {% if withdraw_form.provider.errors %}
+                <div class="alert alert-danger mt-2">
+                  {% for error in withdraw_form.provider.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Amount (TSH)</label>
+              {{ withdraw_form.amount }}
+              {% if withdraw_form.amount.errors %}
+                <div class="alert alert-danger mt-2">
+                  {% for error in withdraw_form.amount.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              {{ withdraw_form.phone_number }}
+              <div class="form-text">Enter your mobile money number</div>
+              {% if withdraw_form.phone_number.errors %}
+                <div class="alert alert-danger mt-2">
+                  {% for error in withdraw_form.phone_number.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            <button class="btn btn-warning w-100" type="submit">📱 Withdraw to Mobile Money</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <!-- Recent Transactions -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">📊 Recent Transactions</h5>
+          {% if transactions %}
+            <div class="list-group">
+              {% for t in transactions %}
+                <div class="list-group-item d-flex justify-content-between">
+                  <div>
+                    <strong>{{ t.get_ttype_display }}</strong>
+                    <div class="small text-muted">{{ t.created_at }}</div>
+                    {% if t.note %}<div class="small">{{ t.note }}</div>{% endif %}
+                  </div>
+                  <span class="badge bg-{% if t.ttype == 'deposit' or t.ttype == 'payout' %}success{% else %}danger{% endif %} rounded-pill">
+                    {% if t.ttype == 'deposit' or t.ttype == 'payout' %}+{% else %}-{% endif %} {{ t.amount }} TSH
+                  </span>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="mt-3">
+              <a href="{% url 'game:transactions' %}" class="btn btn-outline-primary">View All Transactions</a>
+            </div>
+          {% else %}
+            <p class="text-muted">No transactions yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
